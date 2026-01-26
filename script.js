@@ -35,6 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
         state.currentScreen = screenId;
     }
 
+    function hideAllModals() {
+        document.getElementById('custom-plate-modal').style.display = 'none';
+        document.getElementById('clear-confirm-modal').style.display = 'none';
+        document.getElementById('edit-name-modal').style.display = 'none';
+    }
+
     // --- Setup Screen Logic ---
     document.getElementById('plus-diner').onclick = () => {
         if (state.dinerCount < 8) {
@@ -80,14 +86,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('custom-plate-btn').onclick = () => {
+        hideAllModals();
         document.getElementById('custom-plate-modal').style.display = 'block';
-        document.getElementById('clear-confirm-modal').style.display = 'none';
         modalOverlay.style.display = 'flex';
     };
 
     document.getElementById('clear-history').onclick = () => {
         if (state.meals.length > 0) {
-            document.getElementById('custom-plate-modal').style.display = 'none';
+            hideAllModals();
             document.getElementById('clear-confirm-modal').style.display = 'block';
             modalOverlay.style.display = 'flex';
         }
@@ -190,8 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (meal) {
                     state.editingMealId = mealId;
                     document.getElementById('edit-name-input').value = meal.name;
-                    document.getElementById('custom-plate-modal').style.display = 'none';
-                    document.getElementById('clear-confirm-modal').style.display = 'none';
+                    hideAllModals();
                     document.getElementById('edit-name-modal').style.display = 'block';
                     modalOverlay.style.display = 'flex';
                     setTimeout(() => document.getElementById('edit-name-input').select(), 100);
