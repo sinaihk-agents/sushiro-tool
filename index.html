@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>壽司計算器 | Sushi Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Setup Screen -->
+        <section id="setup-screen" class="screen active">
+            <header>
+                <button class="back-btn"><i class="fas fa-chevron-left"></i></button>
+                <h1>壽司郎用餐人數設定</h1>
+            </header>
+            <main>
+                <div class="hero">
+                    <h2>今天有多少人用餐？</h2>
+                    <p class="subtitle">請選擇人數以開始計算分帳</p>
+                </div>
+
+                <div class="stepper">
+                    <button id="minus-diner" class="step-btn">
+                        <i class="fa-solid fa-minus"></i>
+                    </button>
+                    <div class="stepper-value">
+                        <span id="diner-count">4</span>
+                        <span class="unit">位大人</span>
+                    </div>
+                    <button id="plus-diner" class="step-btn plus">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+
+
+                <button id="start-dining" class="primary-btn">
+                    開始用餐 <i class="fas fa-utensils"></i>
+                </button>
+            </main>
+        </section>
+
+        <!-- Calculator Screen -->
+        <section id="calc-screen" class="screen">
+            <header>
+                <button id="back-to-setup" class="back-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="brand">
+                    <div class="logo-circle"><i class="fa-solid fa-utensils"></i></div>
+                    <h1>壽司計算器</h1>
+                </div>
+                <button class="menu-btn" title="提交收據">
+                    <i class="fa-solid fa-receipt"></i>
+                </button>
+            </header>
+            <main>
+                <div class="section-label"><i class="fas fa-plus-circle"></i> 新增盤子</div>
+                <div class="plate-grid">
+                    <button class="plate-btn red" data-price="12" data-name="紅盤">
+                        <div class="plate-num">1</div>
+                        <div class="plate-info">
+                            <span class="plate-name">紅盤</span>
+                            <span class="plate-price">$12</span>
+                        </div>
+                    </button>
+                    <button class="plate-btn silver" data-price="17" data-name="銀盤">
+                        <div class="plate-num">2</div>
+                        <div class="plate-info">
+                            <span class="plate-name">銀盤</span>
+                            <span class="plate-price">$17</span>
+                        </div>
+                    </button>
+                    <button class="plate-btn gold" data-price="22" data-name="金盤">
+                        <div class="plate-num">3</div>
+                        <div class="plate-info">
+                            <span class="plate-name">金盤</span>
+                            <span class="plate-price">$22</span>
+                        </div>
+                    </button>
+                    <button class="plate-btn black" data-price="27" data-name="黑盤">
+                        <div class="plate-num">4</div>
+                        <div class="plate-info">
+                            <span class="plate-name">黑盤</span>
+                            <span class="plate-price">$27</span>
+                        </div>
+                    </button>
+                </div>
+
+                <button id="custom-plate-btn" class="custom-btn">
+                    <i class="fas fa-file-invoice-dollar"></i> + 自定義金額
+                </button>
+
+                <div class="section-label history-label">
+                    <i class="fas fa-list-ul"></i> 消費記錄
+                    <div class="history-actions">
+                        <span id="item-count-badge" class="badge-count">共 0 項</span>
+                        <button id="clear-history" class="clear-btn">清空</button>
+                    </div>
+                </div>
+
+                <div id="history-list" class="history-list">
+                    <!-- History items will be injected here -->
+                </div>
+            </main>
+            <footer class="calc-footer">
+                <div class="totals-overview">
+                    <div class="grand-total-section">
+                        <span class="label">總計金額</span>
+                        <div class="total-amount-row">
+                            <span class="currency">$</span>
+                            <span id="grand-total">0.00</span>
+                        </div>
+                    </div>
+                    <div class="service-charge">
+                        <span class="label">含服務費</span>
+                        <span id="service-charge-amount">+$0.00</span>
+                    </div>
+                </div>
+                <div id="diner-totals-row" class="diner-totals-row">
+                    <!-- Individual totals will go here -->
+                </div>
+            </footer>
+        </section>
+
+        <!-- Result Screen -->
+        <section id="result-screen" class="screen">
+            <header>
+                <button class="back-to-calc"><i class="fas fa-chevron-left"></i></button>
+                <h1>優惠券及收據提交</h1>
+            </header>
+            <main>
+                <div class="form-card">
+                    <div class="form-header">
+                        <i class="fas fa-ticket-alt"></i> 輸入資料
+                    </div>
+                    <div class="input-group">
+                        <label>上次收據金額</label>
+                        <div class="input-wrapper">
+                            <span class="prefix">$</span>
+                            <input type="number" id="receipt-amount" placeholder="0.00" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>邀請碼</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-key prefix-icon"></i>
+                            <input type="text" id="invite-code" placeholder="請輸入邀請碼">
+                        </div>
+                    </div>
+                    <button id="submit-webhook" class="primary-btn submit-btn">
+                        <i class="fas fa-paper-plane"></i> 提交
+                    </button>
+                </div>
+
+                <div class="response-section">
+                    <div class="response-label"><i class="fas fa-desktop"></i> 系統回傳碼</div>
+                    <div class="response-box">
+                        <div id="response-title" class="response-title">SYSTEM RESPONSE CODE</div>
+                        <div id="response-code" class="response-value">----------</div>
+                        <div class="status-indicator">
+                            <span class="dot"></span>
+                            <span id="status-text">WAITING FOR SUBMISSION</span>
+                        </div>
+                    </div>
+                    <p class="disclaimer">請向店員出示此系統碼以完成優惠折扣。此碼僅限單次使用。</p>
+                </div>
+
+                <button id="return-calc" class="secondary-btn">
+                    <i class="fas fa-undo"></i> 返回計算器
+                </button>
+            </main>
+        </section>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal">
+            <div id="custom-plate-modal" class="modal-content">
+                <h3>自定義金額</h3>
+                <div class="input-wrapper custom-input-wrapper">
+                    <span class="prefix">$</span>
+                    <input type="number" id="custom-price" placeholder="例如: 49.5" step="0.01" min="0">
+                </div>
+                <input type="text" id="custom-name" placeholder="項目名稱 (例如: 和牛盛合)">
+                <div class="modal-actions">
+                    <button id="cancel-modal" class="text-btn">取消</button>
+                    <button id="confirm-custom" class="primary-btn">確認</button>
+                </div>
+            </div>
+
+            <div id="clear-confirm-modal" class="modal-content" style="display: none;">
+                <h3>清空紀錄</h3>
+                <p style="color: var(--text-muted); margin-bottom: 24px;">確定要清空所有消費記錄嗎？此動作無法復原。</p>
+                <div class="modal-actions" style="justify-content: space-between;">
+                    <button id="cancel-clear" class="secondary-btn" style="margin: 0; width: 45%;">取消</button>
+                    <button id="confirm-clear" class="primary-btn" style="margin: 0; width: 45%;">確定清空</button>
+                </div>
+            </div>
+
+            <div id="edit-name-modal" class="modal-content" style="display: none;">
+                <h3>修改名稱</h3>
+                <input type="text" id="edit-name-input" placeholder="項目名稱">
+                <div class="modal-actions">
+                    <button id="cancel-edit-name" class="text-btn">取消</button>
+                    <button id="confirm-edit-name" class="primary-btn">確認</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
