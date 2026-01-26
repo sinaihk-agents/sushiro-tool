@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Result Screen Logic ---
     document.querySelector('.menu-btn').onclick = () => {
         const amountField = document.getElementById('receipt-amount');
-        amountField.value = grandTotalEl.textContent;
+        amountField.value = "";
         showScreen('result-screen');
 
         // Reset message
