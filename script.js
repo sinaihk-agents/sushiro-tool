@@ -6,14 +6,22 @@ document.addEventListener('DOMContentLoaded', () => {
         diners: [], // { id: 'A', name: 'Member 1' }
         meals: [],  // { id, name, price, payers: ['A', 'B'] }
         serviceChargeRate: 0.1,
-        editingMealId: null
+        editingMealId: null,
+        // Calorie Tracker State
+        sushiData: [],
+        consumedSushi: [], // { sushi_name, calories, id }
+        totalCalories: 0,
+        calorieGoal: 2000,
+        currentCategory: 'all',
+        searchQuery: ''
     };
 
     // --- DOM Elements ---
     const screens = {
         setup: document.getElementById('setup-screen'),
         calc: document.getElementById('calc-screen'),
-        result: document.getElementById('result-screen')
+        result: document.getElementById('result-screen'),
+        calorie: document.getElementById('calorie-screen')
     };
 
     const dinerCountEl = document.getElementById('diner-count');
@@ -39,6 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('custom-plate-modal').style.display = 'none';
         document.getElementById('clear-confirm-modal').style.display = 'none';
         document.getElementById('edit-name-modal').style.display = 'none';
+        document.getElementById('consumed-list-modal').style.display = 'none';
+        document.getElementById('clear-calories-confirm-modal').style.display = 'none';
+        document.getElementById('edit-goal-modal').style.display = 'none';
+        modalOverlay.style.display = 'none';
     }
 
     // --- Setup Screen Logic ---
@@ -69,6 +81,17 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     document.getElementById('back-to-setup').onclick = () => {
+        showScreen('setup-screen');
+    };
+
+    document.getElementById('open-calorie-tracker').onclick = () => {
+        showScreen('calorie-screen');
+        if (state.sushiData.length === 0) {
+            loadSushiData();
+        }
+    };
+
+    document.getElementById('back-to-setup-from-cal').onclick = () => {
         showScreen('setup-screen');
     };
 
@@ -319,4 +342,249 @@ document.addEventListener('DOMContentLoaded', () => {
             responseCodeEl.textContent = 'ERROR';
         }
     };
+
+    // --- Calorie Tracker Logic ---
+    async function loadSushiData() {
+        console.log('Fetching sushi data...');
+        try {
+            const response = await fetch('sushiro-calories.json');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            console.log('Sushi data loaded:', data.length, 'items');
+            state.sushiData = data;
+            renderSushiGrid();
+        } catch (error) {
+            console.error('Error loading sushi data:', error);
+        }
+    }
+
+    function renderSushiGrid() {
+        const grid = document.getElementById('sushi-grid');
+        grid.innerHTML = '';
+
+        const filtered = state.sushiData.filter(sushi => {
+            const matchesSearch = sushi.sushi_name.toLowerCase().includes(state.searchQuery.toLowerCase());
+            if (state.searchQuery.trim() !== "") {
+                return matchesSearch; // Global search overrides category
+            }
+            const matchesCategory = state.currentCategory === 'all' || sushi.category === state.currentCategory;
+            return matchesCategory;
+        });
+
+        filtered.forEach(sushi => {
+            const card = document.createElement('div');
+            const consumedItem = state.consumedSushi.find(item => item.sushi_name === sushi.sushi_name);
+            const count = consumedItem ? consumedItem.count : 0;
+
+            card.className = `sushi-card ${count > 0 ? 'selected' : ''}`;
+            card.innerHTML = `
+                <div class="add-btn-circle">
+                    <i class="fas fa-plus"></i>
+                    ${count > 0 ? `<span class="portion-badge">${count}</span>` : ''}
+                </div>
+                <img src="${sushi.image_url}" alt="${sushi.sushi_name}" onerror="this.src='https://placehold.co/200x160?text=${encodeURIComponent(sushi.sushi_name)}'">
+                <div class="sushi-info">
+                    <div class="sushi-name">${sushi.sushi_name}</div>
+                    <div class="sushi-calories"><i class="fas fa-fire"></i> ${sushi.calories} KCAL</div>
+                </div>
+            `;
+
+            card.onclick = () => addSushi(sushi);
+            grid.appendChild(card);
+        });
+    }
+
+    function addSushi(sushi) {
+        const item = state.consumedSushi.find(item => item.sushi_name === sushi.sushi_name);
+        if (item) {
+            item.count++;
+        } else {
+            state.consumedSushi.push({ ...sushi, count: 1 });
+        }
+        updateCalorieUI();
+        renderSushiGrid();
+    }
+
+    function removeSushi(sushiName) {
+        const index = state.consumedSushi.findIndex(item => item.sushi_name === sushiName);
+        if (index > -1) {
+            if (state.consumedSushi[index].count > 1) {
+                state.consumedSushi[index].count--;
+            } else {
+                state.consumedSushi.splice(index, 1);
+            }
+        }
+        updateCalorieUI();
+        renderSushiGrid();
+        renderConsumedModal();
+    }
+
+    function updateCalorieUI() {
+        const total = state.consumedSushi.reduce((sum, item) => sum + (item.calories * item.count), 0);
+        state.totalCalories = total;
+        const remaining = state.calorieGoal - total; // Remove Math.max(..., 0)
+
+        // Update Overview
+        document.getElementById('total-calories').textContent = total;
+        const remainingEl = document.getElementById('remaining-calories');
+        remainingEl.textContent = remaining.toLocaleString();
+
+        // Highlight negative
+        const summaryCard = remainingEl.closest('.summary-item');
+        if (remaining < 0) {
+            summaryCard.classList.add('negative');
+        } else {
+            summaryCard.classList.remove('negative');
+        }
+
+        // Update Footer
+        document.getElementById('footer-remaining').textContent = remaining.toLocaleString();
+        const totalPortions = state.consumedSushi.reduce((sum, item) => sum + item.count, 0);
+        document.getElementById('footer-count').textContent = totalPortions;
+
+        // Progress ring
+        const circle = document.getElementById('calorie-progress');
+        const radius = circle.r.baseVal.value;
+        const circumference = 2 * Math.PI * radius;
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+
+        const offset = circumference - (Math.min(total / state.calorieGoal, 1) * circumference);
+        circle.style.strokeDashoffset = isNaN(offset) ? circumference : offset;
+
+        // Update Goal Displays
+        const goalDisplays = ['goal-display', 'summary-goal-display'];
+        goalDisplays.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = state.calorieGoal.toLocaleString();
+        });
+    }
+
+    // Modal logic for consumed list
+    document.getElementById('show-consumed-list').onclick = () => {
+        if (state.consumedSushi.length === 0) {
+            alert('尚未選擇項目');
+            return;
+        }
+        hideAllModals();
+        renderConsumedModal();
+        modalOverlay.style.display = 'flex';
+        document.getElementById('consumed-list-modal').style.display = 'block';
+    };
+
+    function renderConsumedModal() {
+        const listContainer = document.getElementById('consumed-items-list');
+        listContainer.innerHTML = '';
+
+        state.consumedSushi.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'consumed-row';
+            row.innerHTML = `
+                <div class="consumed-row-info">
+                    <div class="consumed-row-name">${item.sushi_name}</div>
+                    <div class="consumed-row-cal">${item.calories} kcal/份</div>
+                </div>
+                <div class="consumed-qty-control">
+                    <button class="qty-btn minus" data-name="${item.sushi_name}"><i class="fas fa-minus"></i></button>
+                    <span class="qty-val">${item.count}</span>
+                    <button class="qty-btn plus" data-name="${item.sushi_name}"><i class="fas fa-plus"></i></button>
+                </div>
+            `;
+
+            row.querySelector('.qty-btn.minus').onclick = () => removeSushi(item.sushi_name);
+            row.querySelector('.qty-btn.plus').onclick = () => {
+                addSushi(item);
+                renderConsumedModal();
+            };
+
+            listContainer.appendChild(row);
+        });
+
+        document.getElementById('modal-total-cal').textContent = `${state.totalCalories} kcal`;
+
+        if (state.consumedSushi.length === 0) {
+            modalOverlay.style.display = 'none';
+        }
+    }
+
+    document.getElementById('close-consumed-modal').onclick = () => {
+        modalOverlay.style.display = 'none';
+        document.getElementById('consumed-list-modal').style.display = 'none';
+    };
+
+    document.getElementById('clear-all-consumed').onclick = () => {
+        hideAllModals();
+        document.getElementById('clear-calories-confirm-modal').style.display = 'block';
+        modalOverlay.style.display = 'flex';
+    };
+
+    document.getElementById('confirm-clear-calories').onclick = () => {
+        state.consumedSushi = [];
+        updateCalorieUI();
+        renderSushiGrid();
+        modalOverlay.style.display = 'none';
+        document.getElementById('clear-calories-confirm-modal').style.display = 'none';
+    };
+
+    document.getElementById('cancel-clear-calories').onclick = () => {
+        hideAllModals();
+        renderConsumedModal();
+        document.getElementById('consumed-list-modal').style.display = 'block';
+        modalOverlay.style.display = 'flex';
+    };
+
+    // Goal configuration logic
+    function openEditGoalModal() {
+        hideAllModals();
+        document.getElementById('new-goal-input').value = state.calorieGoal;
+        document.getElementById('edit-goal-modal').style.display = 'block';
+        modalOverlay.style.display = 'flex';
+        setTimeout(() => document.getElementById('new-goal-input').select(), 100);
+    }
+
+    const editGoalTrigger = document.getElementById('edit-goal-trigger');
+    if (editGoalTrigger) editGoalTrigger.onclick = openEditGoalModal;
+
+    const goalSummaryItem = document.getElementById('goal-summary-item');
+    if (goalSummaryItem) goalSummaryItem.onclick = openEditGoalModal;
+
+    document.getElementById('cancel-goal-edit').onclick = hideAllModals;
+
+    document.getElementById('confirm-goal-edit').onclick = () => {
+        const input = document.getElementById('new-goal-input');
+        const newVal = parseInt(input.value);
+        if (!isNaN(newVal) && newVal >= 500) {
+            state.calorieGoal = newVal;
+            updateCalorieUI();
+            hideAllModals();
+        } else {
+            alert('請輸入合理的卡路里目標（至少 500 kcal）');
+        }
+    };
+
+    // Search and Filters
+    document.getElementById('sushi-search').oninput = (e) => {
+        state.searchQuery = e.target.value;
+        renderSushiGrid();
+    };
+
+    document.querySelectorAll('.category-tab').forEach(tab => {
+        tab.onclick = () => {
+            document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            state.currentCategory = tab.dataset.category;
+            renderSushiGrid();
+        };
+    });
+
+    // Handle initial state if any
+    const clearBtn = document.getElementById('clear-calories');
+    if (clearBtn) {
+        clearBtn.onclick = () => {
+            state.consumedSushi = [];
+            updateCalorieUI();
+            renderSushiGrid();
+        };
+    }
 });

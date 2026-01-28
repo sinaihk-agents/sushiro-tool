@@ -1,4 +1,4 @@
-:root {
+﻿:root {
     --primary-red: #E60012;
     --primary-red-hover: #CC0010;
     --bg-light: #F8F9FA;
@@ -822,18 +822,25 @@ header h1 {
 
 .secondary-btn {
     width: calc(100% - 48px);
-    margin: 0 24px;
-    padding: 16px;
-    background: #F2F2F7;
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
+    margin: 16px 24px 0;
+    padding: 20px;
+    background: white;
+    border: 1.5px solid #D1D9E6;
+    border-radius: 18px;
+    font-size: 18px;
     font-weight: 700;
-    color: #48484A;
+    color: #6C7A8F;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.secondary-btn:active {
+    transform: scale(0.98);
+    background: #F8F9FB;
 }
 
 /* Modals */
@@ -913,4 +920,492 @@ header h1 {
     cursor: pointer;
     padding: 10px;
     white-space: nowrap;
+}
+
+/* Calorie Tracker Entrance */
+.calorie-entrance {
+    margin-top: 40px;
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 24px;
+}
+
+.calorie-entrance p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.link-btn {
+    background: none;
+    border: none;
+    color: var(--primary-red);
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 auto;
+    transition: all 0.2s;
+}
+
+.link-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.8;
+}
+
+/* Calorie Overview */
+.calorie-overview {
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+    background: white;
+    margin-bottom: 16px;
+}
+
+.progress-container {
+    position: relative;
+    width: 160px;
+    height: 160px;
+}
+
+.progress-ring-fill {
+    transition: stroke-dashoffset 0.35s;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+}
+
+.progress-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+#total-calories {
+    display: block;
+    font-size: 32px;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-main);
+    line-height: 1.2;
+}
+
+.progress-content .goal-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.clickable {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.clickable:active {
+    transform: scale(0.95);
+}
+
+.calorie-summary-card .summary-item.clickable:hover {
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 12px;
+}
+
+/* Calorie Summary Card */
+.calorie-summary-card {
+    background: white;
+    margin: 0 24px 24px;
+    padding: 24px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.summary-item {
+    flex: 1;
+    text-align: center;
+}
+
+.summary-item .label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.summary-item .value {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.summary-item.highlight .value {
+    color: #FF3B30;
+}
+
+.summary-item.negative .value {
+    color: var(--primary-red);
+    text-shadow: 0 0 10px rgba(230, 0, 18, 0.2);
+}
+
+.summary-item .unit {
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 2px;
+}
+
+.calorie-summary-card .divider {
+    width: 1px;
+    height: 30px;
+    background: #E5E5EA;
+    margin: 0 20px;
+}
+
+/* Header Action Fix */
+.profile-btn {
+    width: 36px;
+    height: 36px;
+    background: #FFEBEB;
+    border-radius: 50%;
+    border: none;
+    color: var(--primary-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+/* Search & Categories Refinement */
+.search-filter-section {
+    padding: 0 24px 16px;
+}
+
+.search-bar {
+    background: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: none;
+}
+
+.search-bar i {
+    color: var(--text-muted);
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+    font-family: inherit;
+}
+
+.category-tabs {
+    display: flex;
+    gap: 12px;
+    padding: 0 20px 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.category-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.category-tab {
+    padding: 10px 20px;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.category-tab.active {
+    background: var(--primary-red);
+    color: white;
+    border-color: var(--primary-red);
+}
+
+/* Sushi Grid */
+.sushi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 0 20px 100px;
+}
+
+.sushi-card {
+    background: white;
+    border-radius: 16px;
+    padding: 0;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: none;
+    transition: transform 0.2s;
+    overflow: hidden;
+    height: 240px;
+}
+
+.sushi-card:active {
+    transform: scale(0.98);
+}
+
+.sushi-card img {
+    width: 70%;
+    margin: 10px auto;
+    aspect-ratio: 1.2;
+    object-fit: contain;
+}
+
+.sushi-info {
+    padding: 12px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+}
+
+.sushi-name {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--text-main);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 40px;
+}
+
+.sushi-calories {
+    font-size: 13px;
+    color: var(--primary-red);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.sushi-calories i {
+    font-size: 11px;
+}
+
+.add-btn-circle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: white;
+    /* Changed to white for better contrast as multiple portions are possible */
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-red);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    z-index: 2;
+    transition: all 0.2s;
+}
+
+.sushi-card.selected .add-btn-circle {
+    background: var(--primary-red);
+    color: white;
+    border-color: var(--primary-red);
+}
+
+.portion-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #FF3B30;
+    color: white;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 800;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Calorie Footer Red */
+.calorie-footer-red {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 410px;
+    /* 450px - 40px */
+    background: var(--primary-red);
+    padding: 16px 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(230, 0, 18, 0.3);
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.footer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.main-info {
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sub-info {
+    font-size: 12px;
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+.action-btn {
+    background: white;
+    color: var(--primary-red);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+/* Consumed Modal Styles */
+#consumed-list-modal {
+    max-width: 400px;
+    width: 90%;
+    padding: 20px 0;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.clear-btn-text {
+    background: none;
+    border: none;
+    color: var(--primary-red);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.consumed-items-list {
+    max-height: 350px;
+    overflow-y: auto;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.consumed-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #F8F9FA;
+}
+
+.consumed-row img {
+    width: 50px;
+    height: 40px;
+    object-fit: contain;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.consumed-row-info {
+    flex: 1;
+}
+
+.consumed-row-name {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.consumed-row-cal {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.consumed-qty-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #F1F2F6;
+    padding: 4px 10px;
+    border-radius: 100px;
+}
+
+.qty-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 2px 6px;
+}
+
+.qty-val {
+    font-size: 14px;
+    font-weight: 800;
+    min-width: 20px;
+    text-align: center;
+}
+
+.modal-footer-summary {
+    padding: 16px 24px 0;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-weight: 800;
+    font-size: 18px;
+}
+
+#modal-total-cal {
+    color: var(--primary-red);
+}
+
+.modal-footer-summary .primary-btn {
+    width: 100%;
+    margin: 0;
 }

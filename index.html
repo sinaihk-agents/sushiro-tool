@@ -45,6 +45,10 @@
                 <button id="start-dining" class="primary-btn">
                     開始用餐 <i class="fas fa-utensils"></i>
                 </button>
+
+                <button id="open-calorie-tracker" class="secondary-btn">
+                    <i class="fa-solid fa-dumbbell"></i> 進入卡路里追蹤
+                </button>
             </main>
         </section>
 
@@ -177,12 +181,88 @@
                 </button>
             </main>
         </section>
+
+        <!-- Calorie Tracker Screen -->
+        <section id="calorie-screen" class="screen">
+            <header>
+                <button id="back-to-setup-from-cal" class="back-btn"><i class="fas fa-chevron-left"></i></button>
+                <h1>壽司郎卡路里追蹤器</h1>
+                <div class="header-actions">
+                    <button class="profile-btn"><i class="fas fa-user"></i></button>
+                </div>
+            </header>
+            <main>
+                <div class="calorie-overview">
+                    <div class="progress-container">
+                        <svg class="progress-ring" width="160" height="160">
+                            <circle class="progress-ring-bg" stroke="#E5E5EA" stroke-width="12" fill="transparent"
+                                r="70" cx="80" cy="80" />
+                            <circle id="calorie-progress" class="progress-ring-fill" stroke="var(--primary-red)"
+                                stroke-width="12" stroke-linecap="round" fill="transparent" r="70" cx="80" cy="80" />
+                        </svg>
+                        <div id="edit-goal-trigger" class="progress-content clickable">
+                            <span id="total-calories">0</span>
+                            <span class="goal-label">/ <span id="goal-display">1500</span> KCAL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calorie-summary-card">
+                    <div id="goal-summary-item" class="summary-item clickable">
+                        <span class="label">今日目標</span>
+                        <div class="value"><span id="summary-goal-display">1,500</span> <span class="unit">kcal</span>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="summary-item highlight">
+                        <span class="label">尚可攝取</span>
+                        <div class="value"><span id="remaining-calories">1,500</span> <span class="unit">kcal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-filter-section">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="sushi-search" placeholder="搜尋壽司名稱...">
+                    </div>
+                </div>
+
+                <div class="category-tabs">
+                    <button class="category-tab active" data-category="all">全部</button>
+                    <button class="category-tab" data-category="握壽司">握壽司</button>
+                    <button class="category-tab" data-category="軍艦・卷物">軍艦・卷物</button>
+                    <button class="category-tab" data-category="嚴選二貫">嚴選二貫</button>
+                    <button class="category-tab" data-category="副餐類">副餐類</button>
+                    <button class="category-tab" data-category="麵類・湯類">麵類・湯類</button>
+                    <button class="category-tab" data-category="甜品・飲料">甜品・飲料</button>
+                </div>
+
+                <div id="sushi-grid" class="sushi-grid">
+                    <!-- Sushi items will be injected here -->
+                </div>
+            </main>
+            <footer class="calorie-footer-red">
+                <div class="footer-info">
+                    <div class="main-info">
+                        <i class="fas fa-info-circle"></i>
+                        <span>剩餘額度: <span id="footer-remaining">1500</span> kcal</span>
+                    </div>
+                    <div class="sub-info">
+                        已選擇 <span id="footer-count">0</span> 碟壽司
+                    </div>
+                </div>
+                <button id="show-consumed-list" class="action-btn">
+                    查看明細 <i class="fas fa-chevron-right"></i>
+                </button>
+            </footer>
+        </section>
     </div>
 
     <!-- Modals -->
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal">
-            <div id="custom-plate-modal" class="modal-content">
+            <div id="custom-plate-modal" class="modal-content" style="display: none;">
                 <h3>自定義金額</h3>
                 <div class="input-wrapper custom-input-wrapper">
                     <span class="prefix">$</span>
@@ -212,10 +292,45 @@
                     <button id="confirm-edit-name" class="primary-btn">確認</button>
                 </div>
             </div>
-        </div>
-    </div>
+            <div id="consumed-list-modal" class="modal-content" style="display: none;">
+                <div class="modal-header">
+                    <h3>已選擇項目</h3>
+                    <button id="clear-all-consumed" class="clear-btn-text">全部清空</button>
+                </div>
+                <div id="consumed-items-list" class="consumed-items-list">
+                    <!-- Items will be injected here -->
+                </div>
+                <div class="modal-footer-summary">
+                    <div class="total-row">
+                        <span>總計卡路里</span>
+                        <span id="modal-total-cal">0 kcal</span>
+                    </div>
+                    <button id="close-consumed-modal" class="primary-btn">返回追蹤器</button>
+                </div>
+            </div>
 
-    <script src="script.js"></script>
+            <div id="clear-calories-confirm-modal" class="modal-content" style="display: none;">
+                <h3>清空卡路里紀錄</h3>
+                <p style="color: var(--text-muted); margin-bottom: 24px;">確定要清空所有已選壽司嗎？此動作無法復原。</p>
+                <div class="modal-actions" style="justify-content: space-between;">
+                    <button id="cancel-clear-calories" class="secondary-btn" style="margin: 0; width: 45%;">取消</button>
+                    <button id="confirm-clear-calories" class="primary-btn" style="margin: 0; width: 45%;">確定</button>
+                </div>
+            </div>
+
+            <div id="edit-goal-modal" class="modal-content" style="display: none;">
+                <h3>修改今日目標</h3>
+                <div class="input-wrapper custom-input-wrapper">
+                    <input type="number" id="new-goal-input" placeholder="例如: 2000" step="50" min="500">
+                </div>
+                <div class="modal-actions">
+                    <button id="cancel-goal-edit" class="text-btn">取消</button>
+                    <button id="confirm-goal-edit" class="primary-btn">確認</button>
+                </div>
+            </div>
+        </div>
+
+        <script src="script.js"></script>
 </body>
 
 </html>
