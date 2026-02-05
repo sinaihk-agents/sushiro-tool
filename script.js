@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- State ---
     let state = {
         currentScreen: 'setup-screen',
-        dinerCount: 4,
+        dinerCount: 2,
         diners: [], // { id: 'A', name: 'Member 1' }
         meals: [],  // { id, name, price, payers: ['A', 'B'] }
         serviceChargeRate: 0.1,
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sushiData: [],
         consumedSushi: [], // { sushi_name, calories, id }
         totalCalories: 0,
-        calorieGoal: 2000,
+        calorieGoal: 1000,
         currentCategory: 'all',
         searchQuery: ''
     };
@@ -271,8 +271,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const serviceCharge = total * state.serviceChargeRate;
         const grandTotal = total + serviceCharge;
 
-        grandTotalEl.textContent = grandTotal.toFixed(2);
-        serviceChargeEl.textContent = `+$${serviceCharge.toFixed(2)}`;
+        grandTotalEl.textContent = Math.round(grandTotal);
+        serviceChargeEl.textContent = `+$${Math.round(serviceCharge)}`;
 
         // Render individual bubbles
         dinerTotalsRow.innerHTML = '';
@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
             div.className = `diner-total-card ${finalTotal > 0 ? 'highlight' : ''}`;
             div.innerHTML = `
                 <div class="card-circle">${d.id}</div>
-                <div class="card-amount">$${finalTotal.toFixed(1)}</div>
+                <div class="card-amount">$${Math.round(finalTotal)}</div>
             `;
             dinerTotalsRow.appendChild(div);
         });
@@ -347,13 +347,19 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadSushiData() {
         console.log('Fetching sushi data...');
         try {
-            const response = await fetch('sushiro-calories.json');
+            const response = await fetch('sushiro-jp-calories.json');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
             console.log('Sushi data loaded:', data.length, 'items');
-            state.sushiData = data;
+            // Map 'cat' to 'category' and set default image if missing
+            state.sushiData = data.map(item => ({
+                ...item,
+                category: item.cat || 'others',
+                image_url: item.image_url || 'placeholder.png'
+            }));
+            updateCalorieUI();
             renderSushiGrid();
         } catch (error) {
             console.error('Error loading sushi data:', error);
@@ -379,12 +385,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const count = consumedItem ? consumedItem.count : 0;
 
             card.className = `sushi-card ${count > 0 ? 'selected' : ''}`;
+            const displayImg = sushi.image_url && sushi.image_url !== "" ? sushi.image_url : 'placeholder.png';
             card.innerHTML = `
                 <div class="add-btn-circle">
                     <i class="fas fa-plus"></i>
                     ${count > 0 ? `<span class="portion-badge">${count}</span>` : ''}
                 </div>
-                <img src="${sushi.image_url}" alt="${sushi.sushi_name}" onerror="this.src='https://placehold.co/200x160?text=${encodeURIComponent(sushi.sushi_name)}'">
+                <img src="${displayImg}" alt="${sushi.sushi_name}" onerror="this.src='placeholder.png'">
                 <div class="sushi-info">
                     <div class="sushi-name">${sushi.sushi_name}</div>
                     <div class="sushi-calories"><i class="fas fa-fire"></i> ${sushi.calories} KCAL</div>
@@ -587,4 +594,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderSushiGrid();
         };
     }
+
+    // --- Initialization ---
+    updateCalorieUI();
 });
