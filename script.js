@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         Object.values(screens).forEach(s => s.classList.remove('active'));
         screens[screenId.replace('-screen', '')].classList.add('active');
         state.currentScreen = screenId;
+        window.scrollTo(0, 0);
     }
 
     function hideAllModals() {
@@ -50,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('consumed-list-modal').style.display = 'none';
         document.getElementById('clear-calories-confirm-modal').style.display = 'none';
         document.getElementById('edit-goal-modal').style.display = 'none';
+        document.getElementById('social-modal').style.display = 'none';
         modalOverlay.style.display = 'none';
     }
 
@@ -89,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (state.sushiData.length === 0) {
             loadSushiData();
         }
+        updateCalorieUI();
     };
 
     document.getElementById('back-to-setup-from-cal').onclick = () => {
@@ -196,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="history-item-name edit-trigger" data-meal-id="${meal.id}">${meal.name}</div>
                         <div class="history-item-time">${meal.time}</div>
                     </div>
-                    <div class="history-item-price">$${meal.price.toFixed(2)}</div>
+                    <div class="history-item-price">$${meal.price.toFixed(0)}</div>
                 </div>
                 <div class="history-item-payers">
                     <span class="payer-label">付款人：</span>
@@ -268,11 +271,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        const serviceCharge = total * state.serviceChargeRate;
+        const serviceCharge = Math.ceil(total * state.serviceChargeRate);
         const grandTotal = total + serviceCharge;
 
-        grandTotalEl.textContent = Math.round(grandTotal);
-        serviceChargeEl.textContent = `+$${Math.round(serviceCharge)}`;
+        grandTotalEl.textContent = grandTotal.toFixed(0);
+        serviceChargeEl.textContent = `+$${serviceCharge.toFixed(0)}`;
 
         // Render individual bubbles
         dinerTotalsRow.innerHTML = '';
@@ -284,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
             div.className = `diner-total-card ${finalTotal > 0 ? 'highlight' : ''}`;
             div.innerHTML = `
                 <div class="card-circle">${d.id}</div>
-                <div class="card-amount">$${Math.round(finalTotal)}</div>
+                <div class="card-amount">$${finalTotal.toFixed(0)}</div>
             `;
             dinerTotalsRow.appendChild(div);
         });
@@ -353,13 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const data = await response.json();
             console.log('Sushi data loaded:', data.length, 'items');
-            // Map 'cat' to 'category' and set default image if missing
-            state.sushiData = data.map(item => ({
-                ...item,
-                category: item.cat || 'others',
-                image_url: item.image_url || 'placeholder.png'
-            }));
-            updateCalorieUI();
+            state.sushiData = data;
             renderSushiGrid();
         } catch (error) {
             console.error('Error loading sushi data:', error);
@@ -375,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (state.searchQuery.trim() !== "") {
                 return matchesSearch; // Global search overrides category
             }
-            const matchesCategory = state.currentCategory === 'all' || sushi.category === state.currentCategory;
+            const matchesCategory = state.currentCategory === 'all' || sushi.cat === state.currentCategory;
             return matchesCategory;
         });
 
@@ -385,13 +382,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const count = consumedItem ? consumedItem.count : 0;
 
             card.className = `sushi-card ${count > 0 ? 'selected' : ''}`;
-            const displayImg = sushi.image_url && sushi.image_url !== "" ? sushi.image_url : 'placeholder.png';
             card.innerHTML = `
                 <div class="add-btn-circle">
                     <i class="fas fa-plus"></i>
                     ${count > 0 ? `<span class="portion-badge">${count}</span>` : ''}
                 </div>
-                <img src="${displayImg}" alt="${sushi.sushi_name}" onerror="this.src='placeholder.png'">
+                <img src="${sushi.image_url || 'placeholder.png'}" alt="${sushi.sushi_name}" onerror="this.src='placeholder.png'">
                 <div class="sushi-info">
                     <div class="sushi-name">${sushi.sushi_name}</div>
                     <div class="sushi-calories"><i class="fas fa-fire"></i> ${sushi.calories} KCAL</div>
@@ -595,6 +591,15 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // --- Initialization ---
-    updateCalorieUI();
+    // --- Initial Load Logic ---
+    // Show social modal on first load
+    setTimeout(() => {
+        hideAllModals();
+        document.getElementById('social-modal').style.display = 'block';
+        modalOverlay.style.display = 'flex';
+    }, 500);
+
+    document.getElementById('close-social-modal').onclick = () => {
+        hideAllModals();
+    };
 });

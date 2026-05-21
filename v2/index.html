@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>壽司計算器 | Sushi Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Setup Screen -->
+        <section id="setup-screen" class="screen">
+            <header>
+                <button class="back-btn" style="visibility: hidden;"><i class="fas fa-chevron-left"></i></button>
+                <h1>壽司郎用餐人數設定</h1>
+                <button id="setup-open-coupons" class="menu-btn" title="優惠券及收據">
+                    <i class="fas fa-ticket-alt"></i>
+                </button>
+            </header>
+            <main>
+                <div class="hero">
+                    <h2>今天有多少人用餐？</h2>
+                    <p class="subtitle">請選擇人數以開始計算分帳</p>
+                </div>
+
+                <div class="stepper">
+                    <button id="minus-diner" class="step-btn">
+                        <i class="fa-solid fa-minus"></i>
+                    </button>
+                    <div class="stepper-value">
+                        <span id="diner-count">2</span>
+                        <span class="unit">位大人</span>
+                    </div>
+                    <button id="plus-diner" class="step-btn plus">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+
+
+                <button id="start-dining" class="primary-btn">
+                    開始用餐 <i class="fas fa-utensils"></i>
+                </button>
+
+                <button id="open-calorie-tracker" class="secondary-btn">
+                    <i class="fa-solid fa-dumbbell"></i> 進入卡路里追蹤
+                </button>
+
+                <button id="open-coupons" class="secondary-btn">
+                    <i class="fas fa-ticket-alt"></i> 優惠券及收據
+                </button>
+            </main>
+        </section>
+
+        <!-- Calculator Screen -->
+        <section id="calc-screen" class="screen">
+            <header>
+                <button id="back-to-setup" class="back-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="brand">
+                    <div class="logo-circle"><i class="fa-solid fa-utensils"></i></div>
+                    <h1>壽司計算器</h1>
+                </div>
+                <button class="menu-btn" title="提交收據">
+                    <i class="fa-solid fa-receipt"></i>
+                </button>
+            </header>
+            <main>
+                <div class="section-label"><i class="fas fa-plus-circle"></i> 新增盤子</div>
+                <div class="plate-grid">
+                    <button class="plate-btn red" data-price="12" data-name="紅盤">
+                        <div class="plate-num">1</div>
+                        <div class="plate-info">
+                            <span class="plate-name">紅盤</span>
+                            <span class="plate-price">$12</span>
+                        </div>
+                    </button>
+                    <button class="plate-btn silver" data-price="17" data-name="銀盤">
+                        <div class="plate-num">2</div>
+                        <div class="plate-info">
+                            <span class="plate-name">銀盤</span>
+                            <span class="plate-price">$17</span>
+                        </div>
+                    </button>
+                    <button class="plate-btn gold" data-price="22" data-name="金盤">
+                        <div class="plate-num">3</div>
+                        <div class="plate-info">
+                            <span class="plate-name">金盤</span>
+                            <span class="plate-price">$22</span>
+                        </div>
+                    </button>
+                    <button class="plate-btn black" data-price="27" data-name="黑盤">
+                        <div class="plate-num">4</div>
+                        <div class="plate-info">
+                            <span class="plate-name">黑盤</span>
+                            <span class="plate-price">$27</span>
+                        </div>
+                    </button>
+                </div>
+
+                <button id="custom-plate-btn" class="custom-btn">
+                    <i class="fas fa-file-invoice-dollar"></i> + 自定義金額
+                </button>
+
+                <div class="section-label history-label">
+                    <i class="fas fa-list-ul"></i> 消費記錄
+                    <div class="history-actions">
+                        <span id="item-count-badge" class="badge-count">共 0 項</span>
+                        <button id="clear-history" class="clear-btn">清空</button>
+                    </div>
+                </div>
+
+                <div id="history-list" class="history-list">
+                    <!-- History items will be injected here -->
+                </div>
+            </main>
+            <footer class="calc-footer">
+                <div class="totals-overview">
+                    <div class="grand-total-section">
+                        <span class="label">總計金額</span>
+                        <div class="total-amount-row">
+                            <span class="currency">$</span>
+                            <span id="grand-total">0.00</span>
+                        </div>
+                    </div>
+                    <div class="service-charge">
+                        <span class="label">含服務費</span>
+                        <span id="service-charge-amount">+$0.00</span>
+                    </div>
+                </div>
+                <div id="diner-totals-row" class="diner-totals-row">
+                    <!-- Individual totals will go here -->
+                </div>
+            </footer>
+        </section>
+
+        <!-- Result Screen -->
+        <section id="result-screen" class="screen active">
+            <header>
+                <button class="back-to-calc" style="visibility: hidden;"><i class="fas fa-chevron-left"></i></button>
+                <h1>優惠券及收據提交</h1>
+            </header>
+            <main>
+                <div class="form-card">
+                    <div class="form-header">
+                        <i class="fas fa-ticket-alt"></i> 輸入資料
+                    </div>
+                    <div class="input-group">
+                        <label>上次收據金額</label>
+                        <div class="input-wrapper">
+                            <span class="prefix">$</span>
+                            <input type="number" id="receipt-amount" placeholder="0" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>邀請碼</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-key prefix-icon"></i>
+                            <input type="text" id="invite-code" placeholder="請輸入邀請碼">
+                        </div>
+                    </div>
+                    <button id="submit-webhook" class="primary-btn submit-btn">
+                        <i class="fas fa-paper-plane"></i> 提交
+                    </button>
+                </div>
+
+                <div class="response-section">
+                    <div class="response-label"><i class="fas fa-desktop"></i> 系統回傳碼</div>
+                    <div class="response-box">
+                        <div id="response-title" class="response-title">SYSTEM RESPONSE CODE</div>
+                        <div id="response-code" class="response-value">----------</div>
+                        <div class="status-indicator">
+                            <span class="dot"></span>
+                            <span id="status-text">WAITING FOR SUBMISSION</span>
+                        </div>
+                    </div>
+                    <p class="disclaimer">請向店員出示此系統碼以完成優惠折扣。此碼僅限單次使用。</p>
+                </div>
+            </main>
+        </section>
+
+        <!-- Calorie Tracker Screen -->
+        <section id="calorie-screen" class="screen">
+            <header>
+                <button id="back-to-setup-from-cal" class="back-btn"><i class="fas fa-chevron-left"></i></button>
+                <h1>壽司郎卡路里追蹤器</h1>
+                <div class="header-actions">
+                </div>
+            </header>
+            <main>
+                <div class="calorie-overview">
+                    <div class="progress-container">
+                        <svg class="progress-ring" width="160" height="160">
+                            <circle class="progress-ring-bg" stroke="#E5E5EA" stroke-width="12" fill="transparent"
+                                r="70" cx="80" cy="80" />
+                            <circle id="calorie-progress" class="progress-ring-fill" stroke="var(--primary-red)"
+                                stroke-width="12" stroke-linecap="round" fill="transparent" r="70" cx="80" cy="80" />
+                        </svg>
+                        <div id="edit-goal-trigger" class="progress-content clickable">
+                            <span id="total-calories">0</span>
+                            <span class="goal-label">/ <span id="goal-display">1000</span> KCAL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calorie-summary-card">
+                    <div id="goal-summary-item" class="summary-item clickable">
+                        <span class="label">今日目標</span>
+                        <div class="value"><span id="summary-goal-display">1,000</span> <span class="unit">kcal</span>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="summary-item highlight">
+                        <span class="label">尚可攝取</span>
+                        <div class="value"><span id="remaining-calories">1,000</span> <span class="unit">kcal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-filter-section">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="sushi-search" placeholder="搜尋壽司名稱...">
+                    </div>
+                </div>
+
+                <div class="category-tabs">
+                    <button class="category-tab active" data-category="all">全部</button>
+                    <button class="category-tab" data-category="嚴選二貫">嚴選二貫</button>
+                    <button class="category-tab" data-category="握壽司">握壽司</button>
+                    <button class="category-tab" data-category="軍艦・卷物">軍艦・卷物</button>
+                    <button class="category-tab" data-category="熱食">熱食</button>
+                    <button class="category-tab" data-category="副餐類">副餐類</button>
+                    <button class="category-tab" data-category="甜品・飲料">甜品・飲料</button>
+                </div>
+
+                <div id="sushi-grid" class="sushi-grid">
+                    <!-- Sushi items will be injected here -->
+                </div>
+            </main>
+            <footer class="calorie-footer-red">
+                <div class="footer-info">
+                    <div class="main-info">
+                        <i class="fas fa-info-circle"></i>
+                        <span>剩餘額度: <span id="footer-remaining">1000</span> kcal</span>
+                    </div>
+                    <div class="sub-info">
+                        已選擇 <span id="footer-count">0</span> 碟壽司
+                    </div>
+                </div>
+                <button id="show-consumed-list" class="action-btn">
+                    查看明細 <i class="fas fa-chevron-right"></i>
+                </button>
+            </footer>
+        </section>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal">
+            <div id="custom-plate-modal" class="modal-content" style="display: none;">
+                <h3>自定義金額</h3>
+                <div class="input-wrapper custom-input-wrapper">
+                    <span class="prefix">$</span>
+                    <input type="number" id="custom-price" placeholder="例如: 49.5" step="0.01" min="0">
+                </div>
+                <input type="text" id="custom-name" placeholder="項目名稱 (例如: 和牛盛合)">
+                <div class="modal-actions">
+                    <button id="cancel-modal" class="text-btn">取消</button>
+                    <button id="confirm-custom" class="primary-btn">確認</button>
+                </div>
+            </div>
+
+            <div id="clear-confirm-modal" class="modal-content" style="display: none;">
+                <h3>清空紀錄</h3>
+                <p style="color: var(--text-muted); margin-bottom: 24px;">確定要清空所有消費記錄嗎？此動作無法復原。</p>
+                <div class="modal-actions" style="justify-content: space-between;">
+                    <button id="cancel-clear" class="secondary-btn" style="margin: 0; width: 45%;">取消</button>
+                    <button id="confirm-clear" class="primary-btn" style="margin: 0; width: 45%;">確定清空</button>
+                </div>
+            </div>
+
+            <div id="edit-name-modal" class="modal-content" style="display: none;">
+                <h3>修改名稱</h3>
+                <input type="text" id="edit-name-input" placeholder="項目名稱">
+                <div class="modal-actions">
+                    <button id="cancel-edit-name" class="text-btn">取消</button>
+                    <button id="confirm-edit-name" class="primary-btn">確認</button>
+                </div>
+            </div>
+            <div id="consumed-list-modal" class="modal-content" style="display: none;">
+                <div class="modal-header">
+                    <h3>已選擇項目</h3>
+                    <button id="clear-all-consumed" class="clear-btn-text">全部清空</button>
+                </div>
+                <div id="consumed-items-list" class="consumed-items-list">
+                    <!-- Items will be injected here -->
+                </div>
+                <div class="modal-footer-summary">
+                    <div class="total-row">
+                        <span>總計卡路里</span>
+                        <span id="modal-total-cal">0 kcal</span>
+                    </div>
+                    <button id="close-consumed-modal" class="primary-btn">返回追蹤器</button>
+                </div>
+            </div>
+
+            <div id="clear-calories-confirm-modal" class="modal-content" style="display: none;">
+                <h3>清空卡路里紀錄</h3>
+                <p style="color: var(--text-muted); margin-bottom: 24px;">確定要清空所有已選壽司嗎？此動作無法復原。</p>
+                <div class="modal-actions" style="justify-content: space-between;">
+                    <button id="cancel-clear-calories" class="secondary-btn" style="margin: 0; width: 45%;">取消</button>
+                    <button id="confirm-clear-calories" class="primary-btn" style="margin: 0; width: 45%;">確定</button>
+                </div>
+            </div>
+
+            <div id="edit-goal-modal" class="modal-content" style="display: none;">
+                <h3>修改今日目標</h3>
+                <div class="input-wrapper custom-input-wrapper">
+                    <input type="number" id="new-goal-input" placeholder="例如: 2000" step="50" min="500">
+                </div>
+                <div class="modal-actions">
+                    <button id="cancel-goal-edit" class="text-btn">取消</button>
+                    <button id="confirm-goal-edit" class="primary-btn">確認</button>
+                </div>
+            </div>
+
+            <!-- Social Follow Modal -->
+            <div id="social-modal" class="modal-content" style="display: none;">
+                <div class="social-header">
+                    <div class="sinai-logo">SinAI</div>
+                    <h3>追蹤我們的最新動態</h3>
+                </div>
+                <p class="social-p">關注我們的社交媒體，獲取更多壽司郎優惠及 AI 資訊！</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/sinaihk/" target="_blank" class="social-btn instagram">
+                        <i class="fab fa-instagram"></i> Instagram
+                    </a>
+                    <a href="https://www.threads.net/@sinaihk" target="_blank" class="social-btn threads">
+                        <i class="fab fa-threads"></i> Threads
+                    </a>
+                </div>
+                <button id="close-social-modal" class="text-btn social-close">稍後再說</button>
+            </div>
+        </div>
+
+        <script src="script.js"></script>
+</body>
+
+</html>
