@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     --primary-red: #E60012;
     --primary-red-hover: #CC0010;
     --bg-light: #F8F9FA;
@@ -1410,6 +1410,7 @@ header h1 {
     width: 100%;
     margin: 0;
 }
+
 /* Social Modal Styles */
 #social-modal {
     padding: 32px 24px;
@@ -1482,4 +1483,3 @@ header h1 {
     color: var(--text-muted);
     width: 100%;
 }
-

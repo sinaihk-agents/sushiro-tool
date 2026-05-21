@@ -17,10 +17,13 @@
 <body>
     <div id="app">
         <!-- Setup Screen -->
-        <section id="setup-screen" class="screen active">
+        <section id="setup-screen" class="screen">
             <header>
-                <button class="back-btn"><i class="fas fa-chevron-left"></i></button>
+                <button class="back-btn" style="visibility: hidden;"><i class="fas fa-chevron-left"></i></button>
                 <h1>壽司郎用餐人數設定</h1>
+                <button id="setup-open-coupons" class="menu-btn" title="優惠券及收據">
+                    <i class="fas fa-ticket-alt"></i>
+                </button>
             </header>
             <main>
                 <div class="hero">
@@ -48,6 +51,10 @@
 
                 <button id="open-calorie-tracker" class="secondary-btn">
                     <i class="fa-solid fa-dumbbell"></i> 進入卡路里追蹤
+                </button>
+
+                <button id="open-coupons" class="secondary-btn">
+                    <i class="fas fa-ticket-alt"></i> 優惠券及收據
                 </button>
             </main>
         </section>
@@ -134,9 +141,9 @@
         </section>
 
         <!-- Result Screen -->
-        <section id="result-screen" class="screen">
+        <section id="result-screen" class="screen active">
             <header>
-                <button class="back-to-calc"><i class="fas fa-chevron-left"></i></button>
+                <button class="back-to-calc" style="visibility: hidden;"><i class="fas fa-chevron-left"></i></button>
                 <h1>優惠券及收據提交</h1>
             </header>
             <main>
@@ -175,10 +182,6 @@
                     </div>
                     <p class="disclaimer">請向店員出示此系統碼以完成優惠折扣。此碼僅限單次使用。</p>
                 </div>
-
-                <button id="return-calc" class="secondary-btn">
-                    <i class="fas fa-undo"></i> 返回計算器
-                </button>
             </main>
         </section>
 

@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- State ---
     let state = {
-        currentScreen: 'setup-screen',
+        currentScreen: 'result-screen',
         dinerCount: 2,
         diners: [], // { id: 'A', name: 'Member 1' }
         meals: [],  // { id, name, price, payers: ['A', 'B'] }
@@ -38,6 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Navigation ---
     function showScreen(screenId) {
+        if (state.currentScreen && state.currentScreen !== screenId) {
+            state.previousScreen = state.currentScreen;
+        }
         Object.values(screens).forEach(s => s.classList.remove('active'));
         screens[screenId.replace('-screen', '')].classList.add('active');
         state.currentScreen = screenId;
@@ -51,7 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('consumed-list-modal').style.display = 'none';
         document.getElementById('clear-calories-confirm-modal').style.display = 'none';
         document.getElementById('edit-goal-modal').style.display = 'none';
-        document.getElementById('social-modal').style.display = 'none';
+        const socialModal = document.getElementById('social-modal');
+        if (socialModal) socialModal.style.display = 'none';
         modalOverlay.style.display = 'none';
     }
 
@@ -97,6 +101,26 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('back-to-setup-from-cal').onclick = () => {
         showScreen('setup-screen');
     };
+
+    const openCouponsEl = document.getElementById('open-coupons');
+    if (openCouponsEl) {
+        openCouponsEl.onclick = () => {
+            const amountField = document.getElementById('receipt-amount');
+            if (amountField) amountField.value = "";
+            showScreen('result-screen');
+            document.getElementById('response-title').textContent = 'SYSTEM RESPONSE CODE';
+        };
+    }
+
+    const setupOpenCouponsEl = document.getElementById('setup-open-coupons');
+    if (setupOpenCouponsEl) {
+        setupOpenCouponsEl.onclick = () => {
+            const amountField = document.getElementById('receipt-amount');
+            if (amountField) amountField.value = "";
+            showScreen('result-screen');
+            document.getElementById('response-title').textContent = 'SYSTEM RESPONSE CODE';
+        };
+    }
 
     // --- Calculator Logic ---
     document.querySelectorAll('.plate-btn').forEach(btn => {
@@ -311,8 +335,26 @@ document.addEventListener('DOMContentLoaded', () => {
         this.select();
     };
 
-    document.querySelector('.back-to-calc').onclick = () => showScreen('calc-screen');
-    document.getElementById('return-calc').onclick = () => showScreen('calc-screen');
+    const backToCalcEl = document.querySelector('.back-to-calc');
+    if (backToCalcEl) {
+        backToCalcEl.onclick = () => {
+            if (state.previousScreen) {
+                showScreen(state.previousScreen);
+            } else {
+                showScreen('calc-screen');
+            }
+        };
+    }
+    const returnCalcEl = document.getElementById('return-calc');
+    if (returnCalcEl) {
+        returnCalcEl.onclick = () => {
+            if (state.previousScreen) {
+                showScreen(state.previousScreen);
+            } else {
+                showScreen('calc-screen');
+            }
+        };
+    }
 
     document.getElementById('submit-webhook').onclick = async () => {
         const amount = document.getElementById('receipt-amount').value;
@@ -581,25 +623,20 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // Handle initial state if any
-    const clearBtn = document.getElementById('clear-calories');
-    if (clearBtn) {
-        clearBtn.onclick = () => {
-            state.consumedSushi = [];
-            updateCalorieUI();
-            renderSushiGrid();
-        };
-    }
-
-    // --- Initial Load Logic ---
     // Show social modal on first load
     setTimeout(() => {
         hideAllModals();
-        document.getElementById('social-modal').style.display = 'block';
-        modalOverlay.style.display = 'flex';
+        const socialModal = document.getElementById('social-modal');
+        if (socialModal) {
+            socialModal.style.display = 'block';
+            modalOverlay.style.display = 'flex';
+        }
     }, 500);
 
-    document.getElementById('close-social-modal').onclick = () => {
-        hideAllModals();
-    };
+    const closeSocialModalEl = document.getElementById('close-social-modal');
+    if (closeSocialModalEl) {
+        closeSocialModalEl.onclick = () => {
+            hideAllModals();
+        };
+    }
 });
